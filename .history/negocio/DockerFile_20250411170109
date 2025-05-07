@@ -1,0 +1,27 @@
+
+
+WORKDIR /var/www/html
+
+# Habilitar mod_rewrite de Apache
+RUN a2enmod rewrite
+
+# Actualizar paquetes y limpiar archivos temporales
+RUN apt-get update && apt-get upgrade -y && apt-get install -y zip git && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Instalar extensiones necesarias
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+
+# Instalar Composer manualmente con validación dinámica del hash
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    php -r "unlink('composer-setup.php');"
+
+# Copiar archivos relevantes
+COPY ./negocio/composer.json .
+COPY ./negocio/.htaccess .
+
+# Instalar dependencias de Composer sin las de desarrollo
+RUN composer install --no-dev --optimize-autoloader
+
+# Configurar DocumentRoot a /public
+RUN sed -i 's#DocumentRoot.*#DocumentRoot /var/www/html/public#' /etc/apache2/sites-enabled/000-default.conf

@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mysql:latest #Busca una imagen para descargar
+    container_name: base_datos #Nombre para nuestro contenedor
+    environment: #Maneja variables de entorno
+      - MYSQL_DATABASE=ventas #Nombre que se le da a la bd
+      - MYSQL_ROOT_PASSWORD=12345
+      #PASSWORD=12345
+    ports: #Puertos locales
+     - 3306:3306
+    volumes:
+      - ./mysql:/var/lib/mysql #
+      - ./db_dump:/docker-entrypoint-initdb.d
+  phpmyadmin:
+     image: phpmyadmin/phpmyadmin
+     container_name: phpmyadmin
+     ports:
+      - 8080:80
+     environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+  webdatos:
+    container_name: web_datos
+    volumes:
+      - ./datos/src/:/var/www/html/src
+      - ./datos/public:/var/www/html/public
+    build:
+      context: .
+      dockerfile: ./datos/Dockerfile
+    ports:
+      - 8000:80
+    depends_on:
+      - db
+  webnegocio:
+    container_name: web_negocio
+    volumes:
+      - ./negocio/src/:/var/www/html/src
+      - ./negocio/public:/var/www/html/public
+    build:
+      context: .
+      dockerfile: ./negocio/Dockerfile
+    ports:
+      - 9000:80
+    depends_on:
+      - webdatos
+volumes:
+  db_dump:
+  mysql:
+  datos:
+  webdatos:
+  webnegocio:
