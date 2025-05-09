@@ -13,8 +13,8 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 
 // Incluir configuración, conexión y rutas
-require __DIR__ . '/config.php';
-require __DIR__ . '/routes.php';
+
+require "routes.php";
 
 // Ejecutar la app
 $app->run();

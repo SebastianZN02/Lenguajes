@@ -11,7 +11,7 @@
     });
     $app->group('/api', function (RouteCollectorProxy $api) {
         $api->group('/artefacto', function(RouteCollectorProxy $artefacto){
-            $artefacto->get('[/read/{id}]', Artefacto::class . ':read'); //*Lectura de un artefacto
+            $artefacto->get('/read[/{id}]', Artefacto::class . ':read'); //*Lectura de un artefacto
             $artefacto->post('', Artefacto::class . ':create');//*Crear un artefacto
             $artefacto->put('/{id}', Artefacto::class . ':update');//*Actualizar un artefacto
             $artefacto->delete('/{id}', Artefacto::class . ':delete');//*Eliminar un artefacto
